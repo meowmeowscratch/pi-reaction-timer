@@ -35,7 +35,7 @@ from datetime import datetime, timezone
 import RPi.GPIO as GPIO
 # meow_sdk: the official library for the meow meow scratch API.
 #   Meow is the main client class; MeowError is raised when API calls fail.
-from meow_sdk import Meow, MeowError
+from meow_sdk import Meow, MeowError, AuthError
 
 # --- Configuration -----------------------------------------------------------
 
@@ -143,8 +143,18 @@ def post_result(api, player, time_ms, best_ms, games_played):
         # set_payload overwrites the stored data at this endpoint.
         # Anyone checking it always sees the player's CURRENT stats.
         api.set_payload(APP, ENDPOINT_REACTION, data)
+    except AuthError as e:
+        # Without a working key nothing can be saved, so there's no point
+        # letting the game continue pretending scores are being recorded.
+        print(f"  API key rejected: {e}")
+        if e.hint:
+            print(f"  Hint: {e.hint}")
+        sys.exit(1)
     except MeowError as e:
         print(f"  Could not post result: {e}")
+        # .hint is a plain-English fix from the API, when it has one.
+        if e.hint:
+            print(f"  Hint: {e.hint}")
 
 
 def fetch_leaderboard(api):
@@ -186,6 +196,9 @@ def update_leaderboard(api, scores, player, time_ms):
         api.set_payload(APP, ENDPOINT_LEADERBOARD, {"scores": scores})
     except MeowError as e:
         print(f"  Could not update leaderboard: {e}")
+        # .hint is a plain-English fix from the API, when it has one.
+        if e.hint:
+            print(f"  Hint: {e.hint}")
 
     return scores
 

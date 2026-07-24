@@ -102,6 +102,8 @@ Replace `your-key-here` with the actual API key from your meow meow scratch acco
 
 > **Tip:** This environment variable goes away when you close the terminal. To make it permanent, add the `export` line to the end of your `~/.bashrc` file.
 
+> **Which kind of key should you use?** Your account offers two. A **platform token** works across every app you own. An **app API key** works for one app only. For a Pi that sits running for days, use an **app API key** — if it ever leaks, only this one app is affected, not your whole account. You'll find both in your account settings.
+
 ### 4. Set your player name
 
 The leaderboard needs to know who you are! Pick a name and set it:
